@@ -1,0 +1,186 @@
+//Edvinas Grotuzas R00206184 SDH-2 group B
+#include<stdio.h>
+#include <stdlib.h>
+#include <limits.h>
+
+//defining node structure 
+typedef struct node {
+    char *name;
+    int age;
+    struct node *left_parent;
+    struct node *right_parent;
+} node;
+
+//creating new node | Menu option 1 function
+node *createnode(char *name,int age){
+    node* result = malloc(sizeof(node));
+    if (result != NULL){
+        result->left_parent = NULL;
+        result->right_parent = NULL;
+        result->name = name;
+        result->age = age;
+    }
+    return result;
+}
+
+//printing the family tree | Menu option 2 function
+
+
+//adding spacing to make tree more readable
+void treespacing(int spacing){
+    for (int i=0; i<spacing; i++){
+        printf("         ");
+    }
+}
+
+void printtree(node *root, int treelvl){
+    if (root == NULL){          //checking if tree is empty
+        treespacing(treelvl);
+        printf("<Empty Tree>\n");
+        return;
+    }
+    /* if tree is not empty, traverse the tree and print out the names, ages 
+    and add spacing to make tree more readable */
+    treespacing(treelvl);
+    printf("%s, age: %d\n",root->name ,root->age); 
+    
+    treespacing(treelvl);
+    printf("left parent\n");
+    printtree(root->left_parent, treelvl + 1);
+    
+    treespacing(treelvl);
+    printf("right parent\n");
+    printtree(root->right_parent, treelvl + 1);
+    
+    printf("finished printing\n");
+}
+
+//finding the oldest member of family | Menu option 3 function
+
+
+/*this function traverses the tree and compares age value in nodes, 
+finds the biggest number and prints it */
+int findoldest(node* root)
+{
+    int temp;
+    int left, right;
+    int oldest = 0;
+    
+    if (root == NULL){
+        printf("<Empty Tree>\n");
+        return -1;
+    }
+    
+    if(root != NULL)
+    {
+        temp = root->age;
+ 
+        left = findoldest(root->left_parent);
+        right = findoldest(root->right_parent);
+
+        if(left > right)
+            oldest = left;
+        else
+            oldest = right;
+        
+        if(temp > oldest)
+            oldest = temp;
+    }
+     return oldest;
+}
+
+// Remove a person | Menu option 4
+
+
+
+
+// print leaves | Menu option 5
+
+void printleaves(node* root) {  //if the tree is empty, let user know it is empty
+    if (root == NULL){
+        printf("<Tree is Empty>");
+    }
+    if (root->left_parent == NULL && root->right_parent == NULL){ //if both right and left parents are NULL that makes it a leaf
+        printf("Leaf node: %s (%d)\n", root->name, root->age);    //print details: name, age
+    }
+    if (root->left_parent)   //if there is left parent, keep going
+        printleaves(root->left_parent);
+        
+    if (root->right_parent) // if there is right parent, keep going
+        printleaves(root->right_parent);
+}
+
+int main()
+{
+    //populating the tree with static nodes
+    
+    node *n1 = createnode("Jon",10);
+    node *n2 = createnode("Alex",39);
+    node *n3 = createnode("Sam",40);
+    node *n4 = createnode("Kris",65);
+    node *n5 = createnode("Robin",68);
+    node *n6 = createnode("Mary", 63);
+
+    //connecting nodes to form a tree
+
+    n1->left_parent = n2;
+    n1->right_parent = n3;
+    n2->left_parent = n4;
+    n2->right_parent = n5;
+    n3->left_parent = n6;
+    n4->left_parent = NULL;
+    n4->right_parent = NULL;
+    n5->left_parent = NULL;
+    n5->right_parent = NULL;
+    n6->left_parent = NULL;
+    n6->right_parent = NULL;
+    
+    int choice, age;
+    char *name;
+
+    while(1)
+    {
+        printf("1.Add a family member\n");
+        printf("2.Print family tree\n");
+        printf("3.Find the oldest person\n");
+        printf("4.Remove a person\n");
+        printf("5.Print the tree leaves\n");
+        printf("6.Exit\n");
+        printf("Enter your choice(number): ");
+        scanf("%d", &choice);
+        
+        switch(choice) //prints menu using switch
+        {
+            case 1:
+                printf("Enter the name of family member: \n");
+                scanf("%s", name);
+                printf("Enter the age of %s", name);
+                scanf("%d", &age);
+                createnode(name, age);
+                break;
+        
+            case 2:
+                printtree(n1, 0);
+                break;
+        
+            case 3:
+                printf("The oldest person in family is %d years old\n", findoldest(n1));
+                break;
+                
+            case 4:
+                printf("What is the name of person you would like to remove?\n");
+                scanf("%s", name);
+                break;
+                
+            case 5:
+                printleaves(n1);
+                break;
+                
+            case 6:
+                printf("Bye");
+                exit(0);
+        }
+    }
+    printf("Bye");
+    return 0;
+}
